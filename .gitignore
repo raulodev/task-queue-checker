@@ -4,3 +4,4 @@ dist
 *.db
 src/test.py
 tests/test.py
+__pycache__
