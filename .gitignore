@@ -1,3 +1,6 @@
 .venv
 upload.sh
 dist
+*.db
+src/test.py
+tests/test.py

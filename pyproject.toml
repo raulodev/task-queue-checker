@@ -5,9 +5,9 @@ build-backend = "hatchling.build"
 name = "task-queue-checker"
 version = "0.0.1"
 authors = [
-  { name="Example Author", email="author@example.com" },
+  { name="Raúl Cobiellas", email="raulodev@gmail.com" },
 ]
-description = "A small example package"
+description = "tool designed to simplify the management and monitoring of task queues in Python environments"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -17,5 +17,5 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pypa/sampleproject"
-Issues = "https://github.com/pypa/sampleproject/issues"
+Homepage = "https://github.com/raulodev/task-queue-checker"
+Issues = "https://github.com/raulodev/task-queue-checker/issues"
