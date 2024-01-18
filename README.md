@@ -1,10 +1,9 @@
 # task-queue-checker
 
-# pagecraft
-
 Tool designed to simplify the management and monitoring of task queues in Python environments
 
-[![Downloads](https://static.pepy.tech/badge/task-queue-checker)](https://pepy.tech/project/task-queue-checker)
+<!-- [![Downloads](https://static.pepy.tech/badge/task-queue-checker)](https://pepy.tech/project/task-queue-checker) -->
+
 [![PyPI version](https://badge.fury.io/py/task-queue-checker.svg)](https://badge.fury.io/py/task-queue-checker)
 ![Repo Size](https://img.shields.io/github/repo-size/raulodev/task-queue-checker)
 ![PyPI - License](https://img.shields.io/pypi/l/task-queue-checker)
@@ -76,3 +75,7 @@ while True :
 
 - create PerstistQueueMySql
 - create PerstistQueuePostgres
+
+## Release Notes (0.0.2)
+
+- update README.md
