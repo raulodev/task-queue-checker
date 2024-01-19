@@ -2,8 +2,8 @@ from typing import List, Union
 import sqlite3
 import pickle
 import datetime
-from .base import SQLBase, QueueBase
-from .types import Task
+from ..base import SQLBase, QueueBase
+from ..types import Task
 
 
 class SQLiteBase(SQLBase):
@@ -147,11 +147,11 @@ class SQLiteBase(SQLBase):
         connection.close()
 
 
-class PerstistQueueSQLite(SQLiteBase, QueueBase):
+class PersistQueueSQLite(SQLiteBase, QueueBase):
     def __init__(
         self,
         database_url: str = "queue.db",
-        tablename: str = "queue",
+        tablename: str = "persistqueue",
     ):
         # Set the database URL and table name
         self._DATABASE_URL = database_url
@@ -161,6 +161,22 @@ class PerstistQueueSQLite(SQLiteBase, QueueBase):
         super().create_table()
 
     def add(self, args):
+        """Add task to queue
+
+        Args:
+        - args : Can be any information to run the consumer
+
+        Example
+        ```python
+        storage.add([1, 2, 3, "Hola Mundo"])
+
+        storage.add({"name": "Raùl", "last_name": "Cobiellas"})
+
+        storage.add("Task # 3")
+
+        storage.add("Task # 4")
+        ```
+        """
         super().insert(args)
 
     def get(self, all=False) -> Union[Task, List[Task], None]:

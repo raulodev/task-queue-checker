@@ -1,13 +1,13 @@
 from typing import Callable
 import threading
-from .perstist_queue_sqlite import PerstistQueueSQLite
+from .storage.persist_queue_sqlite import PersistQueueSQLite
 
 
 class TaskQueueChecker(threading.Thread):
     def __init__(
         self,
         consumer: Callable,
-        task_storage: PerstistQueueSQLite,
+        task_storage: PersistQueueSQLite,
         sleep_interval=5,
         daemon=True,
     ):
