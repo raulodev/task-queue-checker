@@ -3,11 +3,11 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 [project]
 name = "task-queue-checker"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Raúl Cobiellas", email="raulodev@gmail.com" },
 ]
-description = "tool designed to simplify the management and monitoring of task queues in Python environments"
+description = "Tool designed to simplify the management and monitoring of task queues in Python environments"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [

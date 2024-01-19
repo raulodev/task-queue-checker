@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Any
-import json
 
 
 class SQLBase(ABC):
@@ -12,49 +11,43 @@ class SQLBase(ABC):
     @abstractmethod
     def create_table(self):
         """Create the table"""
-        pass
 
     @abstractmethod
-    def insert(self):
+    def insert(self, args):
         """Insert data into the table"""
-        pass
 
     @abstractmethod
     def select(self):
         """Select data from the table"""
-        pass
 
     @abstractmethod
-    def delete(self, id: int):
+    def delete(self, task_id: int):
         """Delete data from the table"""
-        pass
 
     @abstractmethod
-    def update_to_latest(self, id: int):
+    def update_to_latest(self, task_id: int):
         """Update task in the table to the latest position"""
-        pass
 
     @abstractmethod
     def count(self):
         """Count the number of tasks in the table"""
-        pass
+
+    def __str__(self) -> str:
+        return "<SQLBase>"
 
 
 class QueueBase(ABC):
     @abstractmethod
-    def add(self):
+    def add(self, args):
         """Add an item to the queue"""
-        pass
 
     @abstractmethod
-    def get(self):
+    def get(self, _all):
         """Get an item from the queue"""
-        pass
 
     @abstractmethod
     def len(self):
         """Get the length of the queue"""
-        pass
 
     def __str__(self) -> str:
         return "<QueueBase>"
@@ -73,25 +66,14 @@ class TaskBase(ABC):
     @abstractmethod
     def done(self):
         """Mark the task as done and delete this from table"""
-        pass
 
     @abstractmethod
     def cancel(self):
         """Mark the task as cancelled and delete this from table"""
-        pass
 
     @abstractmethod
     def put_last(self):
         """Put the task to the end of the queue"""
-        pass
 
     def __str__(self) -> str:
-        return json.dumps(
-            {
-                "_": "<TaskBase>",
-                "id": self.id,
-                "data": self.data,
-                "timestamp": self.timestamp,
-                "storage": self.storage,
-            }
-        )
+        return "<TaskBase>"

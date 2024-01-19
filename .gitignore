@@ -1,7 +1,7 @@
 .venv
 upload.sh
 dist
-*.db
-src/test.py
-tests/test.py
+test.py
 __pycache__
+*.db
+*.db-journal

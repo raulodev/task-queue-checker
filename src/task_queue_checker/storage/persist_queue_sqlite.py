@@ -4,6 +4,7 @@ import pickle
 import datetime
 from ..base import SQLBase, QueueBase
 from ..types import Task
+from ..utils import get_tasks
 
 
 class SQLiteBase(SQLBase):
@@ -15,8 +16,8 @@ class SQLiteBase(SQLBase):
 
         # Create the table
         sql = (
-            "CREATE TABLE IF NOT EXISTS {} "
-            "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "CREATE TABLE IF NOT EXISTS {} ("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
             "data BLOB ,"
             "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
         ).format(self._TABLE_NAME)
@@ -48,13 +49,13 @@ class SQLiteBase(SQLBase):
         connection.close()
 
     # Select a record from the table
-    def select(self, all=False):
+    def select(self, _all=False):
         # Connect to the database
         connection = sqlite3.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
         # Create the query
-        if all:
+        if _all:
             sql = "SELECT * FROM {} ORDER BY timestamp DESC".format(self._TABLE_NAME)
 
         else:
@@ -66,34 +67,16 @@ class SQLiteBase(SQLBase):
         cursor.execute(sql)
 
         # Fetch the result
-        if all:
+        if _all:
             result = cursor.fetchall()
         else:
             result = cursor.fetchone()
 
+        # Close the connection
+        connection.close()
+
         # Return the result
-        if result is not None:
-            if all:
-                return [
-                    Task(
-                        id=r[0],
-                        data=pickle.loads(r[1]),
-                        timestamp=r[2],
-                        storage=self,
-                    )
-                    for r in result
-                ]
-
-            else:
-                return Task(
-                    id=result[0],
-                    data=pickle.loads(result[1]),
-                    timestamp=result[2],
-                    storage=self,
-                )
-
-        else:
-            return None
+        return get_tasks(self, result, _all)
 
     # Delete a record from the table
     def delete(self, task_id: int):
@@ -131,7 +114,7 @@ class SQLiteBase(SQLBase):
         return result[0]
 
     # Update the timestamp of a record in the table
-    def update_to_latest(self, id: int):
+    def update_to_latest(self, task_id: int):
         # Connect to the database
         connection = sqlite3.connect(self._DATABASE_URL)
         cursor = connection.cursor()
@@ -140,7 +123,7 @@ class SQLiteBase(SQLBase):
         sql = "UPDATE {} SET timestamp = ? WHERE id = ?".format(self._TABLE_NAME)
 
         # Execute the query
-        cursor.execute(sql, (datetime.datetime.now(), id))
+        cursor.execute(sql, (datetime.datetime.now(), task_id))
         # Commit the changes
         connection.commit()
         # Close the connection
@@ -179,12 +162,16 @@ class PersistQueueSQLite(SQLiteBase, QueueBase):
         """
         super().insert(args)
 
-    def get(self, all=False) -> Union[Task, List[Task], None]:
-        return super().select(all)
+    def get(self, _all=False) -> Union[Task, List[Task], None]:
+        """
+        if _all = False (default) return 1 task
+        else  all task are returned
+        """
+        return super().select(_all)
 
-    def task_done(self, id: int):
+    def task_done(self, task_id: int):
         """Delete the task from the table"""
-        super().delete(id)
+        super().delete(task_id)
 
     def task_cancel(self, task_id):
         """Delete the task from the table"""

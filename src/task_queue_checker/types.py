@@ -1,18 +1,38 @@
+import json
+from typing import Union
+from datetime import datetime
 from .base import TaskBase, SQLBase
 
 
 class Task(TaskBase):
-    def __init__(self, id: int, data, timestamp: int, storage: SQLBase) -> None:
-        self.id = id
+    def __init__(
+        self, _id: int, data, timestamp: Union[str, datetime], storage: SQLBase
+    ) -> None:
+        self._id = _id
         self.data = data
         self.timestamp = timestamp
-        self._storage = storage
+        self.storage = storage
 
     def done(self):
-        self._storage.delete(self.id)
+        self.storage.delete(self._id)
 
     def cancel(self):
-        self._storage.delete(self.id)
+        self.storage.delete(self._id)
 
     def put_last(self):
-        self._storage.update_to_latest(self.id)
+        self.storage.update_to_latest(self._id)
+
+    @property
+    def id(self):
+        return self._id
+
+    def __str__(self) -> str:
+        return json.dumps(
+            {
+                "_": "<Task>",
+                "id": self._id,
+                "data": str(self.data),
+                "timestamp": str(self.timestamp),
+                "storage": str(self.storage),
+            }
+        )
