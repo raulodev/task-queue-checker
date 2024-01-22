@@ -67,14 +67,3 @@ while True:
         break
 
 ```
-
-## TODO
-
-- create PersistQueueMySql
-
-## Release Notes (0.0.3)
-
-- update file configuration
-- add PersistQueuePostgres
-- fix TaskBase and Task
-- fix name from Perstist to Persist of storages

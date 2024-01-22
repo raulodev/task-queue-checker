@@ -8,6 +8,12 @@ class SQLBase(ABC):
     # The URL of the database
     _DATABASE_URL: str
 
+    _HOST: str
+    _USER: str
+    _PASSWORD: str
+    _PORT: int
+    _DATABASE: str
+
     @abstractmethod
     def create_table(self):
         """Create the table"""

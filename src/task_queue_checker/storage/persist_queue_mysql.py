@@ -1,57 +1,79 @@
 from typing import List, Union
-import sqlite3
 import pickle
 import datetime
+from urllib.parse import urlparse
 from ..base import SQLBase, QueueBase
 from ..types import Task
 from ..utils import get_tasks
 
 
-class SQLiteBase(SQLBase):
-    # Create a table in the database if it does not already exist
+class MySqlBase(SQLBase):
+    def __init__(self) -> None:
+        super().__init__()
+        # NOTE : this import is here for skip ImportError
+        # when import the storage module
+
+        try:
+            import pymysql
+        except ImportError as exc:
+            raise ImportError("First install pymysql: pip install pymysql") from exc
+
+        self._driver = pymysql
+
+    def create_connection(self):
+        return self._driver.connect(
+            host=self._HOST,
+            user=self._USER,
+            password=self._PASSWORD,
+            database=self._DATABASE,
+            port=self._PORT,
+        )
+
     def create_table(self):
         # Connect to the database
-        connection = sqlite3.connect(self._DATABASE_URL)
+        connection = self.create_connection()
         cursor = connection.cursor()
 
         # Create the table
         sql = (
             "CREATE TABLE IF NOT EXISTS {} ("
-            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-            "data BLOB ,"
-            "timestamp REAL DEFAULT (CAST(strftime('%f', 'now') AS REAL)))"
+            "id INT AUTO_INCREMENT PRIMARY KEY,"
+            "data BLOB,"
+            "timestamp DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3))"
         ).format(self._TABLE_NAME)
 
         # Execute the query
         cursor.execute(sql)
-        # Commit the changes
+        # # Commit the changes
         connection.commit()
-        # Close the connection
+        # # Close the connection
+        cursor.close()
         connection.close()
 
     # Insert a record into the table
     def insert(self, args):
         # Connect to the database
-        connection = sqlite3.connect(self._DATABASE_URL)
+        connection = self.create_connection()
         cursor = connection.cursor()
 
         # Convert the arguments to a pickle object
         data = pickle.dumps(args)
 
         # Create the query
-        sql = ("INSERT INTO {} (data) VALUES (?)").format(self._TABLE_NAME)
+        sql = ("INSERT INTO {} (data) VALUES (%s)").format(self._TABLE_NAME)
 
         # Execute the query
         cursor.execute(sql, (data,))
         # Commit the changes
         connection.commit()
         # Close the connection
+        cursor.close()
         connection.close()
 
     # Select a record from the table
     def select(self, _all=False):
         # Connect to the database
-        connection = sqlite3.connect(self._DATABASE_URL)
+        connection = self.create_connection()
         cursor = connection.cursor()
 
         # Create the query
@@ -73,6 +95,7 @@ class SQLiteBase(SQLBase):
             result = cursor.fetchone()
 
         # Close the connection
+        cursor.close()
         connection.close()
 
         # Return the result
@@ -81,23 +104,24 @@ class SQLiteBase(SQLBase):
     # Delete a record from the table
     def delete(self, task_id: int):
         # Connect to the database
-        connection = sqlite3.connect(self._DATABASE_URL)
+        connection = self.create_connection()
         cursor = connection.cursor()
 
         # Create the query
-        sql = "DELETE FROM {} WHERE id = ?".format(self._TABLE_NAME)
+        sql = "DELETE FROM {} WHERE id = %s".format(self._TABLE_NAME)
 
         # Execute the query
         cursor.execute(sql, (task_id,))
         # Commit the changes
         connection.commit()
         # Close the connection
+        cursor.close()
         connection.close()
 
     # Count the number of records in the table
     def count(self) -> int:
         # Connect to the database
-        connection = sqlite3.connect(self._DATABASE_URL)
+        connection = self.create_connection()
         cursor = connection.cursor()
 
         # Create the query
@@ -108,6 +132,7 @@ class SQLiteBase(SQLBase):
         # Fetch the result
         result = cursor.fetchone()
         # Close the connection
+        cursor.close()
         connection.close()
 
         # Return the result
@@ -116,29 +141,50 @@ class SQLiteBase(SQLBase):
     # Update the timestamp of a record in the table
     def update_to_latest(self, task_id: int):
         # Connect to the database
-        connection = sqlite3.connect(self._DATABASE_URL)
+        connection = self.create_connection()
         cursor = connection.cursor()
 
         # Create the query
-        sql = "UPDATE {} SET timestamp = ? WHERE id = ?".format(self._TABLE_NAME)
+        sql = "UPDATE {} SET timestamp = %s WHERE id = %s".format(self._TABLE_NAME)
 
         # Execute the query
         cursor.execute(sql, (datetime.datetime.utcnow(), task_id))
         # Commit the changes
         connection.commit()
         # Close the connection
+        cursor.close()
         connection.close()
 
+    def __str__(self) -> str:
+        # Return a string representation of the class
+        return "<MySqlBase>"
 
-class PersistQueueSQLite(SQLiteBase, QueueBase):
+
+class PersistQueueMySql(MySqlBase, QueueBase):
     def __init__(
         self,
-        database_url: str = "queue.db",
+        host: str = None,
+        user: str = None,
+        password: str = None,
+        database: str = None,
+        port=3306,
+        database_url: str = None,
         tablename: str = "_persistqueue",
     ):
-        # Set the database URL and table name
-        self._DATABASE_URL = database_url
+        super().__init__()
+        # Set the database  and table name
+
         self._TABLE_NAME = tablename
+
+        if database_url is None:
+            self._HOST = host
+            self._USER = user
+            self._PASSWORD = password
+            self._DATABASE = database
+            self._PORT = port
+
+        else:
+            self._parse_database_url(database_url)
 
         # Create the table
         super().create_table()
@@ -180,6 +226,14 @@ class PersistQueueSQLite(SQLiteBase, QueueBase):
     def len(self):
         return super().count()
 
+    def _parse_database_url(self, database_url: str):
+        parsed_url = urlparse(database_url)
+
+        self._HOST = parsed_url.hostname
+        self._USER = parsed_url.username
+        self._PASSWORD = parsed_url.password
+        self._PORT = parsed_url.port
+        self._DATABASE = parsed_url.path.lstrip("/")
+
     def __str__(self) -> str:
-        # Return a string representation of the class
-        return "<PerstistQueueSQLite>"
+        return "<PersistQueueMySql>"

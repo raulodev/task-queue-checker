@@ -21,11 +21,11 @@ class PostgresBase(SQLBase):
                 "First install psycopg2: pip install psycopg2-binary"
             ) from exc
 
-        self._psycopg2 = psycopg2
+        self._driver = psycopg2
 
     def create_table(self):
         # Connect to the database
-        connection = self._psycopg2.connect(self._DATABASE_URL)
+        connection = self._driver.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
         # Create the table
@@ -33,7 +33,7 @@ class PostgresBase(SQLBase):
             "CREATE TABLE IF NOT EXISTS {} ("
             "id SERIAL PRIMARY KEY,"
             "data BYTEA,"
-            "timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)"
+            "timestamp TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3))"
         ).format(self._TABLE_NAME)
 
         # Execute the query
@@ -47,7 +47,7 @@ class PostgresBase(SQLBase):
     # Insert a record into the table
     def insert(self, args):
         # Connect to the database
-        connection = self._psycopg2.connect(self._DATABASE_URL)
+        connection = self._driver.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
         # Convert the arguments to a pickle object
@@ -67,15 +67,15 @@ class PostgresBase(SQLBase):
     # Select a record from the table
     def select(self, _all=False):
         # Connect to the database
-        connection = self._psycopg2.connect(self._DATABASE_URL)
+        connection = self._driver.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
         # Create the query
         if _all:
-            sql = "SELECT * FROM {} ORDER BY timestamp DESC".format(self._TABLE_NAME)
+            sql = "SELECT * FROM {} ORDER BY timestamp ASC".format(self._TABLE_NAME)
 
         else:
-            sql = ("SELECT * FROM {} ORDER BY timestamp DESC LIMIT 1").format(
+            sql = ("SELECT * FROM {} ORDER BY timestamp ASC LIMIT 1").format(
                 self._TABLE_NAME
             )
 
@@ -98,7 +98,7 @@ class PostgresBase(SQLBase):
     # Delete a record from the table
     def delete(self, task_id: int):
         # Connect to the database
-        connection = self._psycopg2.connect(self._DATABASE_URL)
+        connection = self._driver.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
         # Create the query
@@ -115,7 +115,7 @@ class PostgresBase(SQLBase):
     # Count the number of records in the table
     def count(self) -> int:
         # Connect to the database
-        connection = self._psycopg2.connect(self._DATABASE_URL)
+        connection = self._driver.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
         # Create the query
@@ -135,14 +135,14 @@ class PostgresBase(SQLBase):
     # Update the timestamp of a record in the table
     def update_to_latest(self, task_id: int):
         # Connect to the database
-        connection = self._psycopg2.connect(self._DATABASE_URL)
+        connection = self._driver.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
         # Create the query
         sql = "UPDATE {} SET timestamp = %s WHERE id = %s".format(self._TABLE_NAME)
 
         # Execute the query
-        cursor.execute(sql, (datetime.datetime.now(), task_id))
+        cursor.execute(sql, (datetime.datetime.utcnow(), task_id))
         # Commit the changes
         connection.commit()
         # Close the connection
@@ -158,7 +158,7 @@ class PersistQueuePostgres(PostgresBase, QueueBase):
     def __init__(
         self,
         database_url: str,
-        tablename: str = "persistqueue",
+        tablename: str = "_persistqueue",
     ):
         super().__init__()
         # Set the database URL and table name
