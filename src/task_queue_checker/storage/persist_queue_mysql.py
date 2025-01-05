@@ -1,13 +1,14 @@
-from typing import List, Union
-import pickle
 import datetime
+import pickle
+from typing import List, Union
 from urllib.parse import urlparse
-from ..base import SQLBase, QueueBase
+
+from ..base import Base, QueueBase
 from ..types import Task
 from ..utils import get_tasks
 
 
-class MySqlBase(SQLBase):
+class MySqlBase(Base):
     def __init__(self) -> None:
         super().__init__()
         # NOTE : this import is here for skip ImportError

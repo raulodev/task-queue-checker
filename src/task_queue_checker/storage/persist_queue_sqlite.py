@@ -1,13 +1,14 @@
-from typing import List, Union
-import sqlite3
-import pickle
 import datetime
-from ..base import SQLBase, QueueBase
+import pickle
+import sqlite3
+from typing import List, Union
+
+from ..base import Base, QueueBase
 from ..types import Task
 from ..utils import get_tasks
 
 
-class SQLiteBase(SQLBase):
+class SQLiteBase(Base):
     # Create a table in the database if it does not already exist
     def create_table(self):
         # Connect to the database

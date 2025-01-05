@@ -1,12 +1,13 @@
-from typing import List, Union
-import pickle
 import datetime
-from ..base import SQLBase, QueueBase
+import pickle
+from typing import List, Union
+
+from ..base import Base, QueueBase
 from ..types import Task
 from ..utils import get_tasks
 
 
-class PostgresBase(SQLBase):
+class PostgresBase(Base):
     # Create a table in the database if it does not already exist
 
     def __init__(self) -> None:
