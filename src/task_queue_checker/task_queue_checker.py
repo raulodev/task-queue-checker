@@ -2,13 +2,20 @@ from typing import Callable, Union
 import threading
 from .storage.persist_queue_sqlite import PersistQueueSQLite
 from .storage.persist_queue_postgres import PersistQueuePostgres
+from .storage.persist_queue_mysql import PersistQueueMySql
+from .storage.persist_queue_redis import PersistQueueRedis
 
 
 class TaskQueueChecker(threading.Thread):
     def __init__(
         self,
         consumer: Callable,
-        task_storage: Union[PersistQueueSQLite, PersistQueuePostgres],
+        task_storage: Union[
+            PersistQueueSQLite,
+            PersistQueuePostgres,
+            PersistQueueMySql,
+            PersistQueueRedis,
+        ],
         sleep_interval=5,
         daemon=True,
     ):

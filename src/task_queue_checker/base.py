@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
-class SQLBase(ABC):
+class Base(ABC):
     # The name of the table
     _TABLE_NAME: str
     # The URL of the database
@@ -39,7 +39,7 @@ class SQLBase(ABC):
         """Count the number of tasks in the table"""
 
     def __str__(self) -> str:
-        return "<SQLBase>"
+        return "<Base>"
 
 
 class QueueBase(ABC):
@@ -67,7 +67,7 @@ class TaskBase(ABC):
     # The timestamp of the task
     timestamp: int
     # The storage of the task
-    storage: SQLBase
+    storage: Base
 
     @abstractmethod
     def done(self):

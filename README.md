@@ -67,3 +67,9 @@ while True:
         break
 
 ```
+
+### Run tests
+
+```console
+python -m pytest -s
+```

@@ -1,12 +1,13 @@
 import json
-from typing import Union
 from datetime import datetime
-from .base import TaskBase, SQLBase
+from typing import Union
+
+from .base import Base, TaskBase
 
 
 class Task(TaskBase):
     def __init__(
-        self, _id: int, data, timestamp: Union[str, datetime], storage: SQLBase
+        self, _id: int, data, timestamp: Union[str, datetime], storage: Base
     ) -> None:
         self._id = _id
         self.data = data
