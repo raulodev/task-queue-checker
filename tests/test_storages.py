@@ -1,4 +1,4 @@
-from tests.stores import storage_sqlite, storage_redis
+from tests.stores import storage_sqlite, storage_redis, storage_postgres
 
 values = [
     1,
@@ -10,44 +10,67 @@ values = [
 ]
 
 
+# Redis
 def test_add_redis():
     add(storage_redis)
-
-
-def test_add_sqlite():
-    add(storage_sqlite)
 
 
 def test_get_redis():
     get(storage_redis)
 
 
-def test_get_sqlite():
-    get(storage_sqlite)
-
-
 def test_count_redis():
     count(storage_redis)
-
-
-def test_count_sqlite():
-    count(storage_sqlite)
 
 
 def task_modify_redis():
     task_modify(storage_redis)
 
 
-def task_modify_sqlite():
-    task_modify(storage_sqlite)
-
-
 def test_update_to_latest_redis():
     update_to_latest(storage_redis)
 
 
+# SQLite
+def test_add_sqlite():
+    add(storage_sqlite)
+
+
+def test_get_sqlite():
+    get(storage_sqlite)
+
+
+def test_count_sqlite():
+    count(storage_sqlite)
+
+
+def task_modify_sqlite():
+    task_modify(storage_sqlite)
+
+
 def test_update_to_latest_sqlite():
     update_to_latest(storage_sqlite)
+
+
+# Postgres
+def test_add_postgres():
+    add(storage_postgres)
+
+
+def test_get_postgres():
+    get(storage_postgres)
+
+
+def test_count_postgres():
+    count(storage_postgres)
+
+
+def task_modify_postgres():
+    task_modify(storage_postgres)
+
+
+def test_update_to_latest_postgres():
+    update_to_latest(storage_postgres)
 
 
 def add(storage):

@@ -114,7 +114,7 @@ class MySqlBase(Base):
 
         sql = "UPDATE {} SET timestamp = %s WHERE id = %s".format(self._TABLE_NAME)
 
-        cursor.execute(sql, (datetime.datetime.utcnow(), task_id))
+        cursor.execute(sql, (datetime.datetime.now(datetime.timezone.utc), task_id))
         connection.commit()
         cursor.close()
         connection.close()
