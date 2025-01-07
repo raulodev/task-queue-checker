@@ -1,4 +1,4 @@
-from tests.stores import storage_sqlite, storage_redis, storage_postgres
+from tests.stores import storage_sqlite, storage_redis, storage_postgres, storage_mysql
 
 values = [
     1,
@@ -23,7 +23,7 @@ def test_count_redis():
     count(storage_redis)
 
 
-def task_modify_redis():
+def test_task_modify_redis():
     task_modify(storage_redis)
 
 
@@ -44,7 +44,7 @@ def test_count_sqlite():
     count(storage_sqlite)
 
 
-def task_modify_sqlite():
+def test_task_modify_sqlite():
     task_modify(storage_sqlite)
 
 
@@ -65,12 +65,33 @@ def test_count_postgres():
     count(storage_postgres)
 
 
-def task_modify_postgres():
+def test_task_modify_postgres():
     task_modify(storage_postgres)
 
 
 def test_update_to_latest_postgres():
     update_to_latest(storage_postgres)
+
+
+# Mysql
+def test_add_mysql():
+    add(storage_mysql)
+
+
+def test_get_mysql():
+    get(storage_mysql)
+
+
+def test_count_mysql():
+    count(storage_mysql)
+
+
+def test_task_modify_mysql():
+    task_modify(storage_mysql)
+
+
+def test_update_to_latest_mysql():
+    update_to_latest(storage_mysql)
 
 
 def add(storage):

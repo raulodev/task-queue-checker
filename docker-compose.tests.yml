@@ -15,10 +15,20 @@ services:
     expose:
       - 6379
 
+  db-mysql:
+    image: mysql
+    restart: always
+    expose:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: taskqueue
+
   test-container:
     build: .
     environment:
       - POSTGRES_DATABASE_URL=postgres://postgres:example@db-postgress:5432/postgres
+      - MYSQL_DATABASE_URL=mysql://root:example@db-mysql:3306/taskqueue
       - REDIS_HOST=db-redis
 
     depends_on:
