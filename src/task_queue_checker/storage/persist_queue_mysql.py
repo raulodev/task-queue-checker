@@ -187,6 +187,9 @@ class PersistQueueMySql(MySqlBase, QueueBase):
     def len(self):
         return super().count()
 
+    def __len__(self):
+        return super().count()
+
     def _parse_database_url(self, database_url: str):
         parsed_url = urlparse(database_url)
 

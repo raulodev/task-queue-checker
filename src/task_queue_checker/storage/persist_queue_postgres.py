@@ -164,5 +164,8 @@ class PersistQueuePostgres(PostgresBase, QueueBase):
     def len(self):
         return super().count()
 
+    def __len__(self):
+        return super().count()
+
     def __str__(self) -> str:
         return "<PersistQueuePostgres>"
