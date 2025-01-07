@@ -1,5 +1,6 @@
-from typing import Tuple, Any, List, Union
 import pickle
+from typing import Any, List, Tuple, Union
+
 from .types import Task
 
 
@@ -8,21 +9,29 @@ def get_tasks(
 ):
     if result is not None:
         if _all:
-            return [
-                Task(
-                    _id=r[0],
-                    data=pickle.loads(r[1]),
-                    timestamp=r[2],
-                    storage=self,
-                )
-                for r in result
-            ]
 
-        return Task(
-            _id=result[0],
-            data=pickle.loads(result[1]),
-            timestamp=result[2],
-            storage=self,
-        )
+            tasks = []
+
+            for index, r in enumerate(result):
+
+                tasks.append(get_task(r, self, index))
+
+            return tasks
+
+        return get_task(result, self)
 
     return None
+
+
+def get_task(result, self, index=-1):
+
+    is_bytes = isinstance(result, bytes)
+
+    result_load = pickle.loads(result) if is_bytes else result
+
+    return Task(
+        _id=index if is_bytes else result_load[0],
+        data=result_load[0] if is_bytes else result_load[1],
+        timestamp=result_load[1] if is_bytes else result_load[2],
+        storage=self,
+    )
