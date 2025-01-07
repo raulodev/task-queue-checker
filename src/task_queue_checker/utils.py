@@ -29,9 +29,12 @@ def get_task(result, self, index=-1):
 
     result_load = pickle.loads(result) if is_bytes else result
 
-    return Task(
-        _id=index if is_bytes else result_load[0],
-        data=result_load[0] if is_bytes else result_load[1],
-        timestamp=result_load[1] if is_bytes else result_load[2],
-        storage=self,
-    )
+    _id = index if is_bytes else result_load[0]
+    timestamp = result_load[1] if is_bytes else result_load[2]
+
+    if is_bytes:
+        data = result_load[0]
+    else:
+        data = pickle.loads(result_load[1])
+
+    return Task(_id=_id, data=data, timestamp=timestamp, storage=self)
