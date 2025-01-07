@@ -9,13 +9,10 @@ from ..utils import get_tasks
 
 
 class SQLiteBase(Base):
-    # Create a table in the database if it does not already exist
     def create_table(self):
-        # Connect to the database
         connection = sqlite3.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
-        # Create the table
         sql = (
             "CREATE TABLE IF NOT EXISTS {} ("
             "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -23,39 +20,26 @@ class SQLiteBase(Base):
             "timestamp REAL DEFAULT (CAST(strftime('%f', 'now') AS REAL)))"
         ).format(self._TABLE_NAME)
 
-        # Execute the query
         cursor.execute(sql)
-        # Commit the changes
         connection.commit()
-        # Close the connection
         connection.close()
 
-    # Insert a record into the table
     def insert(self, args):
-        # Connect to the database
         connection = sqlite3.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
-        # Convert the arguments to a pickle object
         data = pickle.dumps(args)
 
-        # Create the query
         sql = ("INSERT INTO {} (data) VALUES (?)").format(self._TABLE_NAME)
 
-        # Execute the query
         cursor.execute(sql, (data,))
-        # Commit the changes
         connection.commit()
-        # Close the connection
         connection.close()
 
-    # Select a record from the table
     def select(self, _all=False):
-        # Connect to the database
         connection = sqlite3.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
-        # Create the query
         if _all:
             sql = "SELECT * FROM {} ORDER BY timestamp ASC".format(self._TABLE_NAME)
 
@@ -64,70 +48,47 @@ class SQLiteBase(Base):
                 self._TABLE_NAME
             )
 
-        # Execute the query
         cursor.execute(sql)
 
-        # Fetch the result
         if _all:
             result = cursor.fetchall()
         else:
             result = cursor.fetchone()
 
-        # Close the connection
         connection.close()
 
-        # Return the result
         return get_tasks(self, result, _all)
 
-    # Delete a record from the table
     def delete(self, task_id: int):
-        # Connect to the database
         connection = sqlite3.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
-        # Create the query
         sql = "DELETE FROM {} WHERE id = ?".format(self._TABLE_NAME)
 
-        # Execute the query
         cursor.execute(sql, (task_id,))
-        # Commit the changes
         connection.commit()
-        # Close the connection
         connection.close()
 
-    # Count the number of records in the table
     def count(self) -> int:
-        # Connect to the database
         connection = sqlite3.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
-        # Create the query
         sql = "SELECT COUNT(*) FROM {}".format(self._TABLE_NAME)
 
-        # Execute the query
         cursor.execute(sql)
-        # Fetch the result
         result = cursor.fetchone()
-        # Close the connection
         connection.close()
 
-        # Return the result
         return result[0]
 
-    # Update the timestamp of a record in the table
     def update_to_latest(self, task_id: int):
-        # Connect to the database
         connection = sqlite3.connect(self._DATABASE_URL)
         cursor = connection.cursor()
 
-        # Create the query
         sql = "UPDATE {} SET timestamp = ? WHERE id = ?".format(self._TABLE_NAME)
 
-        # Execute the query
         cursor.execute(sql, (datetime.datetime.utcnow(), task_id))
-        # Commit the changes
         connection.commit()
-        # Close the connection
         connection.close()
 
 
@@ -137,11 +98,9 @@ class PersistQueueSQLite(SQLiteBase, QueueBase):
         database_url: str = "queue.db",
         tablename: str = "_persistqueue",
     ):
-        # Set the database URL and table name
         self._DATABASE_URL = database_url
         self._TABLE_NAME = tablename
 
-        # Create the table
         super().create_table()
 
     def add(self, args):
@@ -182,5 +141,4 @@ class PersistQueueSQLite(SQLiteBase, QueueBase):
         return super().count()
 
     def __str__(self) -> str:
-        # Return a string representation of the class
         return "<PerstistQueueSQLite>"
