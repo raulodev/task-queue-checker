@@ -2,6 +2,7 @@
 
 Tool designed to simplify the management and monitoring of task queues in Python environments
 
+[![Tests](https://github.com/raulodev/task-queue-checker/actions/workflows/test.yml/badge.svg)](https://github.com/raulodev/task-queue-checker/actions/workflows/test.yml)
 [![Downloads](https://static.pepy.tech/badge/task-queue-checker)](https://pepy.tech/project/task-queue-checker)
 [![PyPI version](https://badge.fury.io/py/task-queue-checker.svg)](https://badge.fury.io/py/task-queue-checker)
 ![Repo Size](https://img.shields.io/github/repo-size/raulodev/task-queue-checker)
